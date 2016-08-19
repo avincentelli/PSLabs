@@ -1,7 +1,7 @@
-﻿## POWERSHELL LAB 1
-## Antonio Vincentelli
+﻿<## POWERSHELL LAB 1 ##>
+# Antonio Vincentelli
 
-## Pre-Lab
+<# Pre-Lab #>
 
 # 1.
 $PSVersionTable.PSVersion
@@ -18,9 +18,9 @@ $PSVersionTable.PSVersion
 
 #>
 
-## Lab 1
+<# Lab 1 #>
 
-# 1. OS Information
+## 1. OS Information
 
 $OsName = (Get-CimInstance CIM_OperatingSystem).Caption
 $OsVersion = (Get-CimInstance CIM_OperatingSystem).Version
@@ -28,24 +28,48 @@ $OsArch = (Get-CimInstance CIM_OperatingSystem).OSArchitecture
 $AddRemove = (gcim CIM_Product).Name
 $Hotfixes = Get-HotFix
 
-# 2. Network Information
-
+## 2. Network Information
+#a
 $PhysAdapters = @((Get-NetAdapterHardwareInfo).Name); $PhysAdapters.length
+# or
+$PhysAd2 = @((Get-NetAdapter -Physical).name); $PhysAd2.Length
 
+#b
 $AdapterTypes = @((Get-NetAdapter).Name)
 
+#c
 $UpIPInfo = @()
 $UpNetworks = Get-NetAdapter | where {$_.Status -eq "Up"}
 $UpNetName = $UpNetworks.Name
 $NetIPs = Get-NetIPAddress | where {$_.AddressFamily -like "IPv4"}
 foreach ($element in $NetIPs)
 {
-    $UpIPInfo += (@{Adapter=$element.InterfaceAlias;IP=$element.IPAddress})
+    $MatchName = $UpNetworks | Where-Object {($_.name -eq $element.InterfaceAlias)}
+    if($MatchName)
+    {
+        $Temp = 
+        [ordered]@{
+            'Name' = $element.InterfaceAlias
+            'IP' = $element.IPAddress
+        }
+    $UpIPInfo += New-Object -TypeName psobject -Property $Temp
+    }
 }
+return $UpIPInfo
 
 
-# 3. Hardware Information
+## 3. Hardware Information
 
-$Drives = 
+$DriveInfo = Get-DriveStatistics
 $SmartDrives = 
 $DeviceManager = 
+
+
+## Diagnostics
+
+$PingLocal = 
+$PingExternal = 
+$PingGateway = 
+$RecentError = $Error[-1]
+$CpuSort = Get-Process | Sort-Object ws -Descending
+$RamHogs = 
