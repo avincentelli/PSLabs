@@ -34,14 +34,15 @@ $PhysAdapters = @((Get-NetAdapterHardwareInfo).Name); $PhysAdapters.length
 
 $AdapterTypes = @((Get-NetAdapter).Name)
 
-$UpIPInfo = New-Object System.Collections.ArrayList
+$UpIPInfo = @()
 $UpNetworks = Get-NetAdapter | where {$_.Status -eq "Up"}
 $UpNetName = $UpNetworks.Name
 $NetIPs = Get-NetIPAddress | where {$_.AddressFamily -like "IPv4"}
 foreach ($element in $NetIPs)
 {
-    $UpIPInfo += ($_.InterfaceAlias,$_.IPAddress)
+    $UpIPInfo += (@{Adapter=$element.InterfaceAlias;IP=$element.IPAddress})
 }
+
 
 # 3. Hardware Information
 
